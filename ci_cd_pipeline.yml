@@ -2,7 +2,7 @@ name: Deploy Database Changes
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:  # Optional: Allows manual triggering
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   deploy-db:
