@@ -2,9 +2,10 @@ name: Deploy Database Changes
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:  # Optional: Allows manual triggering
 
 jobs:
-  deploy:
+  deploy-db:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,38 +28,4 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_NAME }}
         run: |
-          python -c "
-          import os
-          import mysql.connector
-          from mysql.connector import Error
-
-          try:
-              conn = mysql.connector.connect(
-                  host=os.getenv('DB_HOST'),
-                  user=os.getenv('DB_USER'),
-                  password=os.getenv('DB_PASSWORD'),
-                  database=os.getenv('DB_NAME'),
-                  ssl_ca='BaltimoreCyberTrustRoot.crt.pem'
-              )
-              cursor = conn.cursor()
-
-              # Execute SQL scripts
-              with open('add_departments.sql', 'r') as file:
-                  sql = file.read()
-
-              for statement in sql.split(';'):
-                  if statement.strip():
-                      cursor.execute(statement)
-                      conn.commit()
-
-              print('✅ Database changes deployed!')
-
-          except Error as e:
-              print(f'❌ Error: {e}')
-              conn.rollback()
-
-          finally:
-              if conn.is_connected():
-                  cursor.close()
-                  conn.close()
-          "
+          
